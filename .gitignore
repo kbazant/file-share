@@ -1,3 +1,4 @@
 .deployment
 .venv
 .vscode
+__pycache__
