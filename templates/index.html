@@ -5,7 +5,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .content-wrapper {
+            max-width: 600px;
+            margin: auto;
+        }
+    </style>
     <script>
         function copyToClipboard() {
             var copyText = document.getElementById("shareLink");
@@ -16,53 +22,68 @@
             copyText.type = 'hidden'; // Hide the input field again
             alert("Link copied to clipboard: " + copyText.value);
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', function (event) {
+                var fileInput = document.getElementById('file');
+                var file = fileInput.files[0];
+                var allowedTypes = ['image/jpeg', 'image/png', 'application/pdf']; // Allowed file types
+                var maxSize = 5 * 1024 * 1024; // 5 MB
+
+                if (!allowedTypes.includes(file.type)) {
+                    alert('Invalid file type. Only JPEG, PNG, and PDF files are allowed.');
+                    event.preventDefault();
+                    return;
+                }
+
+                if (file.size > maxSize) {
+                    alert('File size exceeds the 5 MB limit.');
+                    event.preventDefault();
+                    return;
+                }
+            });
+        });
     </script>
 </head>
 
-<body class="bg-gray-100">
-    <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold text-center mb-4">Upload File</h1>
-        <p>Securely upload files to Microsoft Azure Blob Storage and generate unique, time-limited sharing link for each
-            uploaded file.
-
-        </p>
-        <form method="post" action="/upload" enctype="multipart/form-data" class="bg-white p-6 rounded shadow-md">
-            <div class="mb-4">
-                <label class="block text-gray-700 text-sm font-bold mb-2" for="file">Choose a file:</label>
-                <input type="file" name="file" id="file"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+<body class="bg-light">
+    <div class="container mt-4 content-wrapper">
+        <img src="static/images/banner.png" class="img-fluid mb-4" alt="Banner">
+        <h1 class="text-center mb-4">Upload File</h1>
+        <p class="text-center">Securely upload files to Microsoft Azure Blob Storage and generate unique, time-limited
+            sharing link for each uploaded file.</p>
+        <p class="text-center text-muted">Allowed file types: JPG, JPEG, PNG, PDF. Maximum file size: 5 MB.</p>
+        <form method="post" action="/upload" enctype="multipart/form-data" class="bg-white p-4 rounded shadow-sm">
+            <div class="form-row">
+                <div class="form-group col-12">
+                    <label for="file">Choose a file:</label>
+                    <input type="file" name="file" id="file" class="form-control-file">
+                </div>
             </div>
-            <div class="flex items-center justify-between">
-                <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Upload</button>
+            <div class="form-row">
+                <div class="form-group col-12 text-center">
+                    <button type="submit" class="btn btn-primary btn-block">Upload</button>
+                </div>
             </div>
         </form>
         {% if error %}
-        <div class="mt-4 p-4 bg-red-100 border-t-4 border-red-500 rounded-b text-red-900 shadow-md" role="alert">
-            <div class="flex">
-                <div>
-                    <p class="font-bold">Error</p>
-                    <p class="text-sm">{{ error }}</p>
-                </div>
-            </div>
+        <div class="alert alert-danger mt-4" role="alert">
+            <strong>Error:</strong> {{ error }}
         </div>
         {% endif %}
         {% if link %}
-        <div class="mt-4 p-4 bg-green-100 border-t-4 border-green-500 rounded-b text-green-900 shadow-md" role="alert">
-            <div class="flex">
-                <div>
-                    <p class="font-bold">File uploaded successfully!</p>
-                    <p class="text-sm">Access it <a href="{{ link }}" class="text-blue-500 underline">here</a>.</p>
-                    <p class="text-sm">Link valid until: {{ expiry_time }}</p>
-                    <input type="hidden" value="{{ link }}" id="shareLink" readonly>
-                    <button onclick="copyToClipboard()"
-                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mt-2">Copy
-                        Link</button>
-                </div>
-            </div>
+        <div class="alert alert-success mt-4" role="alert">
+            <strong>File uploaded successfully!</strong>
+            <p>Access it <a href="{{ link }}" class="alert-link">here</a>.</p>
+            <p>Link valid until: {{ expiry_time }}</p>
+            <input type="hidden" value="{{ link }}" id="shareLink" readonly>
+            <button onclick="copyToClipboard()" class="btn btn-secondary mt-2">Copy Link</button>
         </div>
         {% endif %}
     </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 
 </html>
