@@ -1,26 +1,26 @@
 {
-    "rules": [
-      {
-        "enabled": true,
-        "name": "deleteAfterOneHour",
-        "type": "Lifecycle",
-        "definition": {
-          "actions": {
-            "baseBlob": {
-              "delete": {
-                "daysAfterModificationGreaterThan": 0.0417
-              }
+  "rules": [
+    {
+      "enabled": true,
+      "name": "deleteAfterOneHour",
+      "type": "Lifecycle",
+      "definition": {
+        "actions": {
+          "baseBlob": {
+            "delete": {
+              "daysAfterCreationGreaterThan": 0.0417
             }
-          },
-          "filters": {
-            "blobTypes": [
-              "blockBlob"
-            ],
-            "prefixMatch": [
-              "fileshare/"
-            ]
           }
+        },
+        "filters": {
+          "blobTypes": [
+            "blockBlob"
+          ],
+          "prefixMatch": [
+            "fileshare/"
+          ]
         }
       }
-    ]
-  }
+    }
+  ]
+}
